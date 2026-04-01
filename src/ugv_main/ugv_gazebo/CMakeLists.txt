@@ -6,7 +6,7 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-install(DIRECTORY rviz launch urdf worlds models param maps
+install(DIRECTORY rviz launch urdf worlds models param maps config
     DESTINATION share/${PROJECT_NAME}
 )
 

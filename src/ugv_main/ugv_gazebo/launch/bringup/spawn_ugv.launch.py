@@ -23,7 +23,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     UGV_MODEL = os.environ['UGV_MODEL']
- 
+
     urdf_path = os.path.join(
         get_package_share_directory('ugv_gazebo'),
         'models',
@@ -40,12 +40,16 @@ def generate_launch_description():
         'y_pose', default_value='0.0',
         description='Specify namespace of the robot')
 
-    start_gazebo_ros_spawner_cmd = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
+    # ros_gz_sim create node replaces gazebo_ros spawn_entity.py (Jazzy / Gazebo Harmonic)
+    start_gz_spawner_cmd = Node(
+        package='ros_gz_sim',
+        executable='create',
         arguments=[
-            '-entity', UGV_MODEL,
-            '-file', urdf_path
+            '-name', UGV_MODEL,
+            '-file', urdf_path,
+            '-x', LaunchConfiguration('x_pose'),
+            '-y', LaunchConfiguration('y_pose'),
+            '-z', '0.01',
         ],
         output='screen',
     )
@@ -57,6 +61,6 @@ def generate_launch_description():
     ld.add_action(declare_y_position_cmd)
 
     # Add any conditioned actions
-    ld.add_action(start_gazebo_ros_spawner_cmd)
+    ld.add_action(start_gz_spawner_cmd)
 
     return ld

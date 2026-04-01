@@ -123,7 +123,7 @@ private:
     // Handle odometry data
     void handle_odom(const std::shared_ptr<std_msgs::msg::Float32MultiArray> msg)
     {
-        rclcpp::Time curren_time = rclcpp::Clock().now();
+        rclcpp::Time curren_time = this->get_clock()->now();
 
         float now_odl = msg->data.at(0);
         float now_odr = msg->data.at(1);
@@ -172,7 +172,7 @@ private:
     // Publish odometry data
     void publish_odom()
     {
-        rclcpp::Time curren_time = rclcpp::Clock().now();
+        rclcpp::Time curren_time = this->get_clock()->now();
         nav_msgs::msg::Odometry odom;
         odom.header.stamp = curren_time;
         odom.header.frame_id = odom_frame;

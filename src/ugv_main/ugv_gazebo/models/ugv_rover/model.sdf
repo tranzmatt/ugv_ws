@@ -41,6 +41,7 @@
   <link name='base_imu_link'> 
     <pose relative_to='imu_joint'>0 0 0 0 0 0</pose>
      <sensor name='ugv_imu' type='imu'>
+        <topic>imu</topic>
         <always_on>true</always_on>
         <update_rate>20</update_rate>
          <imu>
@@ -85,11 +86,6 @@
             </z>
           </linear_acceleration>
         </imu>
-        <plugin filename='libgazebo_ros_imu_sensor.so' name='imu_plugin'>
-          <ros>
-             <remapping>~/out:=imu</remapping>
-          </ros>
-        </plugin>
       </sensor>
   </link>
   
@@ -263,6 +259,7 @@
     </collision>
 
       <sensor name="camera" type="depth">
+        <topic>/camera</topic>
         <pose>0 0 0 0 -0 0</pose>
         <always_on>true</always_on>
         <visualize>true</visualize>
@@ -287,19 +284,9 @@
             <stddev>0.007</stddev>
           </noise>
         </camera>
-          <plugin name="camera_driver" filename="libgazebo_ros_camera.so">
-            <ros>
-              <!-- <namespace>test_cam</namespace> -->
-              <!-- <remapping>image_raw:=image_demo</remapping> -->
-              <!-- <remapping>camera_info:=camera_info_demo</remapping> -->
-            </ros>
-            <!-- camera_name>omit so it defaults to sensor name</camera_name-->
-            <!-- frame_name>omit so it defaults to link name</frameName-->
-            <!-- <hack_baseline>0.07</hack_baseline> -->
-          </plugin>
       </sensor>
   </link>
-  
+
   <link name='base_lidar_link'>
   <pose relative_to='base_lidar_link_joint'>0 0 0 0 -0 0</pose>
     <inertial>
@@ -333,12 +320,13 @@
       </geometry>
     </collision>
     
-    <sensor name='hls_lfcd_lds' type='ray'>
+    <sensor name='hls_lfcd_lds' type='gpu_lidar'>
+        <topic>scan</topic>
         <always_on>true</always_on>
         <visualize>true</visualize>
         <pose>0 0 0.04 0 -0 0</pose>
         <update_rate>10</update_rate>
-        <ray>
+        <lidar>
           <scan>
             <horizontal>
               <samples>360</samples>
@@ -357,15 +345,7 @@
             <mean>0.0</mean>
             <stddev>0.01</stddev>
           </noise>
-        </ray>
-        <plugin name='ugv_laserscan' filename='libgazebo_ros_ray_sensor.so'>
-          <ros>
-            <!-- <namespace>/tb3</namespace> -->
-            <remapping>~/out:=scan</remapping>
-          </ros>
-          <output_type>sensor_msgs/LaserScan</output_type>
-          <frame_name>base_lidar_link</frame_name>
-        </plugin>
+        </lidar>
       </sensor>
   </link>
   
@@ -504,6 +484,7 @@
       </geometry>
     </collision>
     <sensor name="pt_camera" type="camera">
+        <topic>/pt_camera</topic>
         <pose>0 0 0 0 -0 0</pose>
         <always_on>true</always_on>
         <visualize>true</visualize>
@@ -528,16 +509,6 @@
             <stddev>0.007</stddev>
           </noise>
         </camera>
-          <plugin name="pt_camera_driver" filename="libgazebo_ros_camera.so">
-            <ros>
-              <!-- <namespace>test_cam</namespace> -->
-              <!-- <remapping>image_raw:=image_demo</remapping> -->
-              <!-- <remapping>camera_info:=camera_info_demo</remapping> -->
-            </ros>
-            <!-- camera_name>omit so it defaults to sensor name</camera_name-->
-            <!-- frame_name>omit so it defaults to link name</frameName-->
-            <!-- <hack_baseline>0.07</hack_baseline> -->
-          </plugin>
       </sensor>
   </link>
   
@@ -645,56 +616,31 @@
   
      <static>0</static>
     
-  <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_diff_drive.so">
-    <updateRate>20</updateRate>
-
-    <!-- Number of wheel pairs -->
-    <num_wheel_pairs>2</num_wheel_pairs>
-
-    <!-- wheels0 -->
+  <!-- Gazebo Harmonic: gz-sim-diff-drive-system replaces libgazebo_ros_diff_drive.so -->
+  <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+    <!-- 4-wheel skid steer pairs -->
     <left_joint>left_up_wheel_link_joint</left_joint>
     <right_joint>right_up_wheel_link_joint</right_joint>
-
-    <!-- wheels1-->
     <left_joint>left_down_wheel_link_joint</left_joint>
     <right_joint>right_down_wheel_link_joint</right_joint>
-
-    <!-- kinematics -->
     <wheel_separation>0.175</wheel_separation>
-    <wheel_separation>0.175</wheel_separation>
-
-    <wheel_diameter>0.05</wheel_diameter>
-    <wheel_diameter>0.05</wheel_diameter>
-
-    <!-- limits -->
-    <max_wheel_torque>20</max_wheel_torque>
-    <max_wheel_acceleration>1.0</max_wheel_acceleration>
-
-    <!-- output -->
-    <publish_odom>true</publish_odom>
-    <publish_odom_tf>true</publish_odom_tf>
-    <publish_wheel_tf>false</publish_wheel_tf>
-    <command_topic>cmd_vel</command_topic>
-    <odometry_topic>odom</odometry_topic>
-    <odometry_frame>odom</odometry_frame>
-    <robot_base_frame>base_footprint</robot_base_frame>
-    </plugin>
+    <wheel_radius>0.025</wheel_radius>
+    <max_linear_acceleration>1.0</max_linear_acceleration>
+    <topic>cmd_vel</topic>
+    <odom_topic>odom</odom_topic>
+    <odom_publish_frequency>20</odom_publish_frequency>
+    <frame_id>odom</frame_id>
+    <child_frame_id>base_footprint</child_frame_id>
+    <tf_topic>/tf</tf_topic>
+  </plugin>
     
-    <plugin name="gazebo_ros_joint_state_publisher"
-    filename="libgazebo_ros_joint_state_publisher.so">
-
-  <ros>
-    <!-- Add a namespace -->
-    <!-- Remap the default topic -->
-    <remapping>joint_states:=joint_states</remapping>
-  </ros>
-  <!-- Update rate in Hertz -->
-  <update_rate>2</update_rate>
-  <!-- Name of joints in the model whose states will be published. -->
-  <joint_name>left_up_wheel_link_joint</joint_name>
-  <joint_name>right_up_wheel_link_joint</joint_name>
-  <joint_name>left_down_wheel_link_joint</joint_name>
-  <joint_name>right_down_wheel_link_joint</joint_name>  
+  <!-- Gazebo Harmonic: gz-sim-joint-state-publisher-system replaces libgazebo_ros_joint_state_publisher.so -->
+  <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+    <update_rate>2</update_rate>
+    <joint_name>left_up_wheel_link_joint</joint_name>
+    <joint_name>right_up_wheel_link_joint</joint_name>
+    <joint_name>left_down_wheel_link_joint</joint_name>
+    <joint_name>right_down_wheel_link_joint</joint_name>
   </plugin>
   </model>
 </sdf>

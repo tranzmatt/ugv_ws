@@ -7,10 +7,10 @@
 
 2.Architecture
 
-- project：https://github.com/DUDULRX/ugv_ws/tree/ros2-humble
+- project：https://github.com/DUDULRX/ugv_ws/tree/ros2-jazzy
     
     ```jsx
-    git clone -b ros2-humble-develop https://github.com/DUDULRX/ugv_ws.git
+    git clone -b ros2-jazzy-develop https://github.com/DUDULRX/ugv_ws.git
     ```
     
     - First compilation on the virtual machine (compiling one by one on the pi or jetson)
@@ -26,7 +26,7 @@
         cd /home/ws/ugv_ws
         colcon build --packages-select apriltag apriltag_msgs apriltag_ros cartographer costmap_converter_msgs costmap_converter emcl2 explore_lite openslam_gmapping slam_gmapping ldlidar rf2o_laser_odometry robot_pose_publisher teb_msgs teb_local_planner vizanti vizanti_cpp vizanti_demos vizanti_msgs vizanti_server ugv_base_node ugv_interface
         colcon build --packages-select ugv_bringup ugv_chat_ai ugv_description ugv_gazebo ugv_nav ugv_slam ugv_tools ugv_vision ugv_web_app --symlink-install 
-        echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+        echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
         echo "eval "$(register-python-argcomplete ros2)"" >> ~/.bashrc
         echo "eval "$(register-python-argcomplete colcon)"" >> ~/.bashrc
         echo "source /home/ws/ugv_ws/install/setup.bash" >> ~/.bashrc
@@ -67,7 +67,7 @@
         
 - Ubuntu software：
     
-    **Install according to wiki install ros2 humble**
+    **Install according to wiki install ros2 jazzy**
     
     ```jsx
     apt-get update 
@@ -77,19 +77,17 @@
     apt-get install alsa-utils
     apt install python3-colcon-argcomplete
     
-    apt install ros-humble-cartographer-*
-    apt install ros-humble-desktop-*
-    apt install ros-humble-joint-state-publisher-*
-    apt install ros-humble-nav2-*
-    apt install ros-humble-rosbridge-*
-    apt install ros-humble-rqt-*
-    apt install ros-humble-rtabmap-*
-    apt install ros-humble-usb-cam
-    apt install ros-humble-depthai-*
+    apt install ros-jazzy-desktop-*
+    apt install ros-jazzy-joint-state-publisher-*
+    apt install ros-jazzy-nav2-*
+    apt install ros-jazzy-rosbridge-*
+    apt install ros-jazzy-rqt-*
+    apt install ros-jazzy-rtabmap-*
+    apt install ros-jazzy-usb-cam
+    apt install ros-jazzy-depthai-*
     
-    #Simulation virtual machine installation
-    apt install gazebo
-    apt install ros-humble-gazebo-*
+    #Simulation virtual machine installation (Gazebo Harmonic via ros_gz_sim)
+    apt install ros-jazzy-ros-gz
     ```
     
 - Python3 Library：
@@ -215,8 +213,8 @@ Enter docker and start ssh to remotely access docker and the visual interface
         
         ```jsx
         cd /home/ws/ugv_ws
-        sudo chmod +x ros2_humble.sh remotessh.sh
-        ./ros2_humble.sh
+        sudo chmod +x ros2_jazzy.sh remotessh.sh
+        ./ros2_jazzy.sh
         ```
         
         1进入docker
