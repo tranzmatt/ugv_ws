@@ -23,7 +23,7 @@
 
 #include "slam_gmapping/slam_gmapping.h"
 
-#include "tf2_ros/create_timer_ros.h"
+#include "tf2_ros/create_timer_ros.hpp"
 
 #define MAP_IDX(sx, i, j) ((sx) * (j) + (i))
 
