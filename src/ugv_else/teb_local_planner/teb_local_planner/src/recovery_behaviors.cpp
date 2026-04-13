@@ -42,6 +42,7 @@
 #include <functional>
 #include <numeric>
 #include <g2o/stuff/misc.h>
+#include <teb_local_planner/g2o_compat.h>
 
 namespace teb_local_planner
 {

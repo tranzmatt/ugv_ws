@@ -40,6 +40,7 @@
 #define POSE_SE2_H_
 
 #include <g2o/stuff/misc.h>
+#include "teb_local_planner/g2o_compat.h"
 
 #include <Eigen/Core>
 #include "teb_local_planner/misc.h"
