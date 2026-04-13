@@ -8,12 +8,20 @@ RUN apt-get update && apt-get install -y \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
-# Cache-bust the clone when the repo changes:
-#   docker build --build-arg CACHEBUST=$(date +%s) ...
-ARG CACHEBUST=1
-RUN git clone https://github.com/tranzmatt/ugv_ws.git /ros2_ws
-
+# Default: copy local source (always reflects current working tree).
+# To build straight from GitHub instead, pass --build-arg USE_GIT=1:
+#   docker build --build-arg USE_GIT=1 -f docker/Dockerfile .
+# Run from the repo root so the build context contains ./src.
+ARG USE_GIT=0
 WORKDIR /ros2_ws
+
+RUN if [ "$USE_GIT" = "1" ]; then \
+        git clone https://github.com/tranzmatt/ugv_ws.git /ros2_ws_git && \
+        cp -r /ros2_ws_git/. /ros2_ws/ && \
+        rm -rf /ros2_ws_git; \
+    fi
+
+COPY . /ros2_ws/
 
 RUN apt-get update && \
     . /opt/ros/jazzy/setup.sh && \
