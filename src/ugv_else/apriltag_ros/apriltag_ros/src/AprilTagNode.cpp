@@ -29,7 +29,7 @@
 
 #include <AprilTagNode.hpp>
 // C Headers
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 
 // default tag families
 #include <tag16h5.h>
