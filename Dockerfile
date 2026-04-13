@@ -14,7 +14,8 @@ WORKDIR /ros2_ws
 #COPY ./src ./src
 # Build your code
 RUN . /opt/ros/jazzy/setup.sh && \
-    rosdep update && rosdep install --from-paths src --ignore-src -r -y && \
+    rosdep update && \
+    rosdep install --from-paths src --ignore-src -r -y && \
     ./build_first.sh && \
     ./build_common.sh && \
     ./build_apriltag.sh && \
