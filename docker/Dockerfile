@@ -32,6 +32,9 @@ RUN apt-get update && \
     cmake -B build -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build --target install && \
     cd /ros2_ws && \
+    ./build_first.sh && \
+    ./build_common.sh && \
+    ./build_apriltag.sh && \
     # Wave 1: third-party / driver packages
     colcon build --packages-select \
         apriltag apriltag_msgs apriltag_ros \
