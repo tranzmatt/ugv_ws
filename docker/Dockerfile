@@ -32,9 +32,6 @@ RUN apt-get update && \
     cmake -B build -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build --target install && \
     cd /ros2_ws && \
-    ./build_first.sh && \
-    ./build_common.sh && \
-    ./build_apriltag.sh && \
     # Wave 1: third-party / driver packages
     colcon build --packages-select \
         apriltag apriltag_msgs apriltag_ros \
@@ -49,11 +46,18 @@ RUN apt-get update && \
         teb_msgs teb_local_planner \
         vizanti vizanti_cpp vizanti_demos vizanti_msgs vizanti_server \
         ugv_base_node ugv_interface && \
+    . install/setup.bash && \
     # Wave 2: ugv application packages
     colcon build --packages-select \
         ugv_bringup ugv_chat_ai ugv_description ugv_gazebo \
         ugv_nav ugv_slam ugv_tools ugv_vision ugv_web_app \
         --symlink-install && \
     rm -rf /var/lib/apt/lists/*
+
+# Set up interactive shell environment
+RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc && \
+    echo 'eval "$(register-python-argcomplete ros2)"' >> ~/.bashrc && \
+    echo 'eval "$(register-python-argcomplete colcon)"' >> ~/.bashrc && \
+    echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
 
 ENTRYPOINT ["/bin/bash"]
