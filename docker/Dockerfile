@@ -1,4 +1,4 @@
-FROM arm64v8/ros:jazzy-ros-base
+FROM arm64v8/ros:jazzy
 
 # Install build deps
 RUN apt-get update && apt-get install -y \

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/mclark/VisualStudioCode/ugv_ws diff --name-only HEAD)",
+      "Bash(git -C /home/mclark/VisualStudioCode/ugv_ws diff --stat HEAD)",
+      "Bash(git -C /home/mclark/VisualStudioCode/ugv_ws log --all --oneline --decorate)",
+      "Bash(grep -n \"ontroller_frequency\\\\|controller_frequency\" /home/mclark/VisualStudioCode/ugv_ws/src/ugv_main/ugv_nav/param/*.yaml)"
+    ]
+  }
+}
