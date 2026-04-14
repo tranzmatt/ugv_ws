@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
 #   docker build --build-arg USE_GIT=1 -f docker/Dockerfile .
 # Run from the repo root so the build context contains ./src.
 ARG USE_GIT=0
+SHELL ["/bin/bash", "-c"]
 WORKDIR /ros2_ws
 
 RUN if [ "$USE_GIT" = "1" ]; then \
