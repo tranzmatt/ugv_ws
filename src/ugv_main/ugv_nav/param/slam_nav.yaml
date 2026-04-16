@@ -150,7 +150,7 @@ local_costmap:
       width: 5
       height: 5
       resolution: 0.05
-      robot_radius: 0.1
+      footprint: [[0.13, 0.12], [0.13, -0.12], [-0.13, -0.12], [-0.13, 0.12]]
       plugins: ["obstacle_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
@@ -184,7 +184,7 @@ global_costmap:
       global_frame: map
       robot_base_frame: base_link
       use_sim_time: False
-      robot_radius: 0.1
+      footprint: [[0.13, 0.12], [0.13, -0.12], [-0.13, -0.12], [-0.13, 0.12]]
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer","obstacle_layer","inflation_layer"]
@@ -281,27 +281,6 @@ waypoint_follower:
       enabled: True
       waypoint_pause_duration: 200
       
-recoveries_server:
-  ros__parameters:
-    costmap_topic: local_costmap/costmap_raw
-    footprint_topic: local_costmap/published_footprint
-    cycle_frequency: 10.0
-    recovery_plugins: ["spin", "backup", "wait"]
-    spin:
-      plugin: "nav2_recoveries/Spin"
-    backup:
-      plugin: "nav2_recoveries/BackUp"
-    wait:
-      plugin: "nav2_recoveries/Wait"
-    global_frame: odom
-    robot_base_frame: base_footprint
-    transform_timeout: 0.1
-    use_sim_time: False
-    simulate_ahead_time: 2.0
-    max_rotational_vel: 1.0
-    min_rotational_vel: 0.4
-    rotational_acc_lim: 3.2
-    
 velocity_smoother:
   ros__parameters:
     use_sim_time: false

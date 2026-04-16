@@ -11,6 +11,11 @@ from launch.substitutions import Command, LaunchConfiguration
 
 # Define a function to generate the launch description
 def generate_launch_description():
+    host_arg = DeclareLaunchArgument(
+        'host', default_value='0.0.0.0',
+        description='Host address for vizanti_server'
+    )
+
     # Include the launch description for the ugv_web_app
     ugv_web_app_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
         [os.path.join(get_package_share_directory('vizanti_server'), 'launch'),
@@ -22,5 +27,6 @@ def generate_launch_description():
         
     # Return the launch description
     return LaunchDescription([
+        host_arg,
         ugv_web_app_launch
     ])
