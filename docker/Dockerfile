@@ -1,28 +1,44 @@
 FROM arm64v8/ros:jazzy
 
-# Install build deps
+SHELL ["/bin/bash", "-c"]
+WORKDIR /home/ws/ugv_ws
+
+# Install build deps and add OSRF Gazebo Harmonic apt repo
 RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
     python3-rosdep \
     git \
     cmake \
-    && rm -rf /var/lib/apt/lists/*
+    curl \
+    gnupg2 \
+    ca-certificates \
+    lsb-release && \
+    curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
+      -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
+      https://packages.osrfoundation.org/gazebo/ubuntu-stable $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+      > /etc/apt/sources.list.d/gazebo-stable.list && \
+    rm -rf /var/lib/apt/lists/*
 
 # Default: copy local source (always reflects current working tree).
 # To build straight from GitHub instead, pass --build-arg USE_GIT=1:
 #   docker build --build-arg USE_GIT=1 -f docker/Dockerfile .
 # Run from the repo root so the build context contains ./src.
 ARG USE_GIT=0
-SHELL ["/bin/bash", "-c"]
-WORKDIR /ros2_ws
 
 RUN if [ "$USE_GIT" = "1" ]; then \
-        git clone https://github.com/tranzmatt/ugv_ws.git /ros2_ws_git && \
-        cp -r /ros2_ws_git/. /ros2_ws/ && \
-        rm -rf /ros2_ws_git; \
+        git clone -b ros2-jazzy-develop \
+            https://github.com/tranzmatt/ugv_ws.git /tmp/ugv_ws_git && \
+        cp -r /tmp/ugv_ws_git/. /home/ws/ugv_ws/ && \
+        rm -rf /tmp/ugv_ws_git; \
     fi
 
-COPY . /ros2_ws/
+# Only copy local context when not using git (conditional via shell test after copy)
+COPY . /tmp/ugv_ws_ctx/
+RUN if [ "$USE_GIT" = "0" ]; then \
+        cp -r /tmp/ugv_ws_ctx/. /home/ws/ugv_ws/; \
+    fi && \
+    rm -rf /tmp/ugv_ws_ctx
 
 RUN apt-get update && \
     . /opt/ros/jazzy/setup.sh && \
@@ -32,7 +48,7 @@ RUN apt-get update && \
     cd src/ugv_else/apriltag_ros/apriltag && \
     cmake -B build -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build --target install && \
-    cd /ros2_ws && \
+    cd /home/ws/ugv_ws && \
     # Wave 1: third-party / driver packages
     colcon build --packages-select \
         apriltag apriltag_msgs apriltag_ros \
@@ -59,7 +75,7 @@ RUN apt-get update && \
 RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc && \
     echo 'eval "$(register-python-argcomplete ros2)"' >> ~/.bashrc && \
     echo 'eval "$(register-python-argcomplete colcon)"' >> ~/.bashrc && \
-    echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
+    echo "source /home/ws/ugv_ws/install/setup.bash" >> ~/.bashrc
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["bash"]
