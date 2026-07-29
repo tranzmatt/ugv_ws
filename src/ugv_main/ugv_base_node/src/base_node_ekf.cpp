@@ -148,7 +148,9 @@ private:
         pre_odr = now_odr;
 
         float dxy_ave = (dright + dleft) / 2.0;
-        float dth = (dright - dleft) / 0.175;
+        // Track width measured directly on this UGV Rover unit: 173mm
+        // (center-to-center of left/right wheel contact patches).
+        float dth = (dright - dleft) / 0.173;
         vx = dxy_ave / dt;
         vw = dth / dt;
 

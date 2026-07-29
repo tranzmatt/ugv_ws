@@ -157,7 +157,9 @@ private:
 
         // Calculate average distance and change in heading
         float dxy_ave = (dright + dleft) / 2.0;
-        float dth = (dright - dleft) / 0.175;
+        // Track width measured directly on this UGV Rover unit: 173mm
+        // (center-to-center of left/right wheel contact patches).
+        float dth = (dright - dleft) / 0.173;
 
         // Compute linear and angular velocities
         vx = dxy_ave / dt;

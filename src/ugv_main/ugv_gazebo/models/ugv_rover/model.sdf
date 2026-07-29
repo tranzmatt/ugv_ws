@@ -623,7 +623,7 @@
     <right_joint>right_up_wheel_link_joint</right_joint>
     <left_joint>left_down_wheel_link_joint</left_joint>
     <right_joint>right_down_wheel_link_joint</right_joint>
-    <wheel_separation>0.175</wheel_separation>
+    <wheel_separation>0.173</wheel_separation>
     <wheel_radius>0.025</wheel_radius>
     <max_linear_acceleration>1.0</max_linear_acceleration>
     <topic>cmd_vel</topic>
