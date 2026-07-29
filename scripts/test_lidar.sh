@@ -9,7 +9,7 @@
 #     ros2 launch ugv_bringup bringup_full.launch.py
 #
 #   The lidar must be wired to the UART configured in /boot/firmware/config.txt:
-#     dtoverlay=uart1-pi5,pins_32_33  →  /dev/ttyAMA1  (default)
+#     dtoverlay=uart1-pi5 (native pins: physical 27/28, GPIO0/1)  →  /dev/ttyAMA1  (default)
 #   And that device must be passed through to the container:
 #     docker run ... --device /dev/ttyAMA1
 #   To use a different port:
