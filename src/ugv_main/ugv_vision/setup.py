@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'color_track = ugv_vision.color_track:main',
+            'gimbal_ball_track = ugv_vision.gimbal_ball_track:main',
             'kcf_track = ugv_vision.kcf_track:main',
             'gesture_ctrl = ugv_vision.gesture_ctrl:main',
             'apriltag_ctrl = ugv_vision.apriltag_ctrl:main',
