@@ -3,11 +3,11 @@
 # health_check.sh — verify all UGV sensor topics are alive at expected rates.
 #
 # PREREQUISITES
-#   The full stack must be running before you run this script.
-#   In one terminal inside the container:
+#   Runs natively on the Pi (no Docker). The full stack must be running
+#   before you run this script. In one terminal:
 #     ros2 launch ugv_bringup bringup_full.launch.py
 #   Wait ~10s for all nodes to finish starting, then in a second terminal:
-#     cd /home/ws/ugv_ws && ./scripts/health_check.sh
+#     cd /home/ws/ugv_ws.jazzy && ./scripts/health_check.sh
 #
 # WHAT IT CHECKS
 #   Base platform  /voltage        ~20 Hz  (ESP32 serial alive)
@@ -21,20 +21,18 @@
 #   TF             /tf              any    (transform tree being broadcast)
 #
 # WHAT TO DO IF SOMETHING FAILS
-#   /voltage missing     → ugv_bringup not running, or /dev/ttyAMA0 not in container
-#   /scan missing        → ldlidar not running, or /dev/ttyAMA1 not in container
-#                          Check: docker inspect <container> | grep Devices
-#                          Fix:   add --device /dev/ttyAMA1 to docker run
-#   /image_raw missing   → usb_cam not running, or /dev/video0 not in container
-#   /oak/* missing       → depthai node not running, or USB not passed through
-#                          Check udev rule on host:
+#   /voltage missing     → ugv_bringup not running, or user not in 'dialout' group (/dev/ttyAMA0)
+#   /scan missing        → ldlidar not running, or user not in 'dialout' group (/dev/ttyAMA1)
+#   /image_raw missing   → usb_cam not running, or user not in 'video' group (/dev/video0)
+#   /oak/* missing       → depthai node not running, or missing udev rule for the
+#                          Movidius MyriadX USB device:
 #                            echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' \
 #                              | sudo tee /etc/udev/rules.d/80-movidius.rules
 #                            sudo udevadm control --reload-rules && sudo udevadm trigger
 # =============================================================================
 
 SETUP="/opt/ros/jazzy/setup.bash"
-WS_SETUP="/home/ws/ugv_ws/install/setup.bash"
+WS_SETUP="/home/ws/ugv_ws.jazzy/install/setup.bash"
 
 source "$SETUP" 2>/dev/null
 source "$WS_SETUP" 2>/dev/null
@@ -96,8 +94,8 @@ check_topic /scan             8   "LD19 laser scan"
 
 echo ""
 echo "--- Cameras ---"
-check_topic /image_raw        25  "USB webcam"
-check_topic /oak/rgb/image_raw    25  "OAK-D RGB"
+check_topic /image_raw        20  "USB webcam"
+check_topic /oak/rgb/image_raw    20  "OAK-D RGB"
 check_topic /oak/stereo/image_raw 15  "OAK-D depth"
 
 echo ""

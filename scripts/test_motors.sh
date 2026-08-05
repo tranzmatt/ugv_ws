@@ -34,7 +34,7 @@ SPEED="${1:-0.1}"
 DURATION="${2:-2}"
 
 source /opt/ros/jazzy/setup.bash 2>/dev/null
-source /home/ws/ugv_ws/install/setup.bash 2>/dev/null
+source /home/ws/ugv_ws.jazzy/install/setup.bash 2>/dev/null
 
 RATE=10
 TICKS=$(echo "$DURATION * $RATE" | bc)
