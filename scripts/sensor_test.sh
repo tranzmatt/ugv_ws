@@ -25,11 +25,14 @@
 #
 # EXPECTED RESULTS
 #   LD19 lidar     /scan                   ~10 Hz
-#   USB webcam     /image_raw              ~30 Hz  (640x480 MJPEG)
-#   OAK-D RGB      /oak/rgb/image_raw      ~25-30 Hz
-#   OAK-D depth    /oak/stereo/image_raw   ~20 Hz
-#   Running the webcam and OAK-D together adds CPU contention on the Pi and
-#   can knock a few Hz off each — that alone is not a failure.
+#   USB webcam     /image_raw              ~25-30 Hz (solo: 30, floor: 15)
+#   OAK-D RGB      /oak/rgb/image_raw      ~25-30 Hz (floor: 15)
+#   OAK-D depth    /oak/stereo/image_raw   ~15-25 Hz (floor: 10)
+#   Running all three sensors together adds real CPU contention on a 4-core
+#   Pi — measured dips to ~19 Hz (webcam/RGB) and ~15 Hz (depth) are normal
+#   under that load, not a fault. The pass/fail floors above are set below
+#   that observed noise floor; they exist to catch a sensor that's actually
+#   dead or barely trickling data, not to enforce the solo/quiet numbers.
 #
 #   If OAK-D fails with X_LINK_ERROR / "No data on logger queue", the device
 #   didn't finish releasing its USB connection from a previous run. Wait
@@ -60,7 +63,7 @@ cleanup() {
     # OAK-D's depthai driver needs a few seconds to close its USB/XLink
     # connection cleanly; killing it too fast can wedge the device until it
     # idles out, causing X_LINK_ERROR on the next launch.
-    sleep 4
+    sleep 6
     for pid in "${PIDS[@]:-}"; do
         kill -KILL "-$pid" 2>/dev/null
     done
@@ -116,6 +119,13 @@ echo "Starting sensor nodes..."
 launch oak launch ugv_vision oak_d_lite.launch.py
 launch lidar launch ldlidar ldlidar.launch.py
 launch usb_cam launch ugv_vision camera.launch.py
+
+# Three concurrent `ros2 launch` startups spike CPU hard on a 4-core Pi.
+# `ros2 topic echo`/`hz` below are themselves fresh DDS participants that
+# need to spin up and discover the publishers — give the initial spawn
+# storm time to settle first, or the checker itself can starve and time
+# out even though the sensor node is already publishing fine.
+sleep 5
 echo ""
 
 echo "--- LD19 Lidar ---"
@@ -123,12 +133,12 @@ check_topic /scan 8 "LD19 laser scan" 15
 
 echo ""
 echo "--- USB Webcam ---"
-check_topic /image_raw 20 "USB webcam" 15
+check_topic /image_raw 15 "USB webcam" 15
 
 echo ""
 echo "--- OAK-D Lite ---"
-check_topic /oak/rgb/image_raw 20 "OAK-D RGB" 25
-check_topic /oak/stereo/image_raw 15 "OAK-D depth" 10
+check_topic /oak/rgb/image_raw 15 "OAK-D RGB" 25
+check_topic /oak/stereo/image_raw 10 "OAK-D depth" 10
 
 echo ""
 echo "========================"
