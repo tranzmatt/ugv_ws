@@ -1,0 +1,29 @@
+import os
+
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    pkg_dir = get_package_share_directory('ugv_vision')
+    param_file = os.path.join(pkg_dir, 'config', 'hailo_detect.yaml')
+
+    camera_launch = IncludeLaunchDescription(PythonLaunchDescriptionSource(
+        [os.path.join(pkg_dir, 'launch'), '/camera.launch.py'])
+    )
+
+    hailo_detect_node = Node(
+        package='ugv_vision',
+        executable='hailo_detect',
+        name='hailo_detect',
+        parameters=[param_file],
+        output='screen',
+    )
+
+    return LaunchDescription([
+        camera_launch,
+        hailo_detect_node,
+    ])

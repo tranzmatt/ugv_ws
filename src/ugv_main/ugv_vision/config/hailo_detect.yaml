@@ -1,0 +1,7 @@
+/**:
+    ros__parameters:
+      hef_path: "/home/ws/HailoAi/models/yolov8s.hef"
+      labels_path: ""  # empty = use the coco_labels.txt shipped with this package
+      venv_site_packages: "/home/ws/HailoAi/venv/lib/python3.12/site-packages"
+      image_topic: "/image_raw"
+      score_threshold: 0.5
